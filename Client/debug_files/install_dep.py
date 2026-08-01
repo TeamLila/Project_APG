@@ -8,7 +8,7 @@ def dependencieInstaller():
     """
     
     answer = askyesno(title="Importing Packages", message="The Programm needs to install dependencies to run.\n"
-                                                        + "Allow Dependencies to be installed?")
+                                                        + "Allow Python-Dependencies to be installed?")
     
     if answer:
         result = subprocess.run(
