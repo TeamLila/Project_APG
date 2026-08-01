@@ -25,6 +25,7 @@ class GameState:
     
     #Area
     back_fill = None
+    doors = {}
     
     
     
@@ -50,11 +51,29 @@ def walking(keys):
     if keys[pygame.K_d]:
         GAME.player_x = min(GAME.player_x + GAME.speed, GAME.player_x_limits[1])
 
+def doorColide():
+    player = GAME.player_icon.get_rect()
+    player.topleft = (GAME.player_x, GAME.player_y)
+    for name, door in GAME.doors.items():
+        if player.colliderect(door):
+            print(f"Collision with {name}")
 
+def makeDoor(name: str, location: list[int], size: list[int]):
+    combinedList = location + size
+    GAME.doors[name] = pygame.Rect(combinedList)
+    
+
+def removeDoor(name: str):
+    del GAME.doors[name]
+
+def drawAllDoors():
+    for _, door in GAME.doors.items():
+        pygame.draw.rect(GAME.screen, (0,0,0), door)
 
 #Main func
 async def run_game():
     GAME.back_fill = (77, 77, 77)
+    makeDoor("AP Dungeon Entrance", [500, 200], [64, 64])
     while GAME.running:
         #used for FPS limit
         frameTime = asyncio.sleep(1/GAME.fps)
@@ -64,14 +83,17 @@ async def run_game():
         
 
         keys = pygame.key.get_pressed()
-        #Walking
+        #Checks
         walking(keys)
+        doorColide()
         
         #Quit (debug)
         if keys[pygame.K_q]:
             GAME.running = False
         
+        #drawing
         GAME.screen.fill(GAME.back_fill)
+        drawAllDoors()
         GAME.screen.blit(GAME.player_icon, (GAME.player_x, GAME.player_y))
         
         
