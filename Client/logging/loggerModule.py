@@ -1,25 +1,35 @@
 import logging
-from enum import Enum
+# from enum import Enum
+import os as OperatingSystem
+from pathlib import Path
+
+APPDATA_PATH = OperatingSystem.getenv("APPDATA")
+LOG_DIR = Path(APPDATA_PATH, "APG")
+LOG_DIR.mkdir(exist_ok=True)
 
 MAIN_LOGGER: logging.Logger
 
 class CustomLogger(logging.Logger):
-    def __init__(self, name: str, level: int = logging.NOTSET):
-        super().__init__(name, level)
-    
-    
-        if not self.handlers:
-            handler = logging.StreamHandler()
-            
-            formatter = logging.Formatter(
-                "[%(asctime)s] [%(levelname)s] %(name)s: %(message)s",
-                datefmt="%H:%M:%S"
-            )
-            
-            handler.setFormatter(formatter)
-            self.addHandler(handler)
-            
-            self.propagate = False
+    def __init__(self, name: str):
+        super().__init__(name, logging.DEBUG)
+
+        formatter = logging.Formatter("[%(asctime)s] [%(levelname)s] %(name)s: %(message)s")
+
+        # Console output
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        console.setFormatter(formatter)
+
+        # File output
+        file = logging.FileHandler(LOG_DIR / "apg.log", encoding="utf-8")
+        file.setLevel(logging.DEBUG)
+        file.setFormatter(formatter)
+
+        self.addHandler(console)
+        self.addHandler(file)
+
+        self.propagate = False
+        
         
     def debugPrint(self, name: str, value):
         """
@@ -41,4 +51,4 @@ class CustomLogger(logging.Logger):
 
 
 
-MAIN_LOGGER = CustomLogger("APG", logging.INFO)
+MAIN_LOGGER = CustomLogger("APG General Logger")
