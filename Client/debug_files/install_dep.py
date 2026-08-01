@@ -1,6 +1,8 @@
 import subprocess
 import sys as system
 from tkinter.messagebox import askyesno, showinfo, showerror
+from pathlib import Path
+
 
 def dependencieInstaller():
     """
@@ -17,12 +19,12 @@ def dependencieInstaller():
             "pip",
             "install",
             "-r",
-            "dependencies.txt"]
+            Path(__file__).resolve().parent / "dependencies.txt"]
         )
     
     if result != 0:
         showerror(title="Something went wrong", message="we dont know what went wrong, but the installer failed. please try again or contact the dev")
-        quit(int(result))
+        quit(-1)
     else:
         showinfo(title="Success", message="Success! Please restart to programm to properly load everything")
         quit(0)
