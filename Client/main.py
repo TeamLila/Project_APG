@@ -15,7 +15,6 @@ async def gameStarter():
 
 
 async def gameMain(): #NOSONAR #async without async used. Will be changed
-    gamestate = game.GAME
     await game.run_game()
 
 
