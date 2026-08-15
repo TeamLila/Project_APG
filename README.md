@@ -1,3 +1,7 @@
+# DISCLAIMER
+at the current state, this is not yet playable...
+also how did you find this? i havent advertised it yet
+
 # How to Play
 ## Client/APG
 1. download the client.zip file from the releases
