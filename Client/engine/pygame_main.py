@@ -1,7 +1,10 @@
 import pygame 
 import asyncio
 from pathlib import Path
+
 import engine.assetLoader as assetLoader
+import engine.areaLoader as areaLoader
+from loggingFolder.loggerModule import MAIN_LOGGER
 
 class GameState:
     #init
@@ -24,8 +27,8 @@ class GameState:
     speed = 5
     
     #Area
+    current_area: areaLoader.Area|None = None
     back_fill = None
-    doors = {}
     
     
     
@@ -35,6 +38,8 @@ class GameState:
         
         self.player_icon = scaled
     
+    def get_player_pos(self) -> list[int]:
+        return [self.player_x, self.player_y]
 
 GAME = GameState()
 GAME.change_player_icon("Player_placeholder.png")
@@ -54,29 +59,24 @@ def walking(keys):
 def doorColide():
     player = GAME.player_icon.get_rect()
     player.topleft = (GAME.player_x, GAME.player_y)
-    for name, door in GAME.doors.items():
-        if player.colliderect(door):
-            print(f"Collision with {name}")
-
-def makeDoor(name: str, location: list[int], size: list[int]):
-    combinedList = location + size
-    GAME.doors[name] = pygame.Rect(combinedList)
-    
-
-def removeDoor(name: str):
-    del GAME.doors[name]
+    for door in areaLoader.AREA_TO_DOORS[GAME.current_area]:
+        _, doorFrame =  door.get_draw_info()
+        if player.colliderect(doorFrame):
+            print(f"Collision with {door.leads_to}")
 
 def drawAllDoors():
-    for _, door in GAME.doors.items():
-        pygame.draw.rect(GAME.screen, (0,0,0), door)
+    for door in areaLoader.AREA_TO_DOORS[GAME.current_area]:
+        color, rect = door.get_draw_info()
+        pygame.draw.rect(GAME.screen, color, rect)
 
 #Main func
 async def run_game():
     GAME.back_fill = (77, 77, 77)
-    makeDoor("AP Dungeon Entrance", [500, 200], [64, 64])
     while GAME.running:
         #used for FPS limit
-        frameTime = asyncio.sleep(1/GAME.fps)
+        frameTime = asyncio.create_task(
+            asyncio.sleep(1/GAME.fps)
+        )
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 GAME.running = False
@@ -87,9 +87,11 @@ async def run_game():
         walking(keys)
         doorColide()
         
-        #Quit (debug)
+        #debug options (quit, get pos)
         if keys[pygame.K_q]:
             GAME.running = False
+        if keys[pygame.K_p]:
+            MAIN_LOGGER.debug(f"Current Pos: {GAME.get_player_pos()}")
         
         #drawing
         GAME.screen.fill(GAME.back_fill)
