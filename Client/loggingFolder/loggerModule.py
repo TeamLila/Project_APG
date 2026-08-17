@@ -2,12 +2,11 @@ import logging
 # from enum import Enum
 import os as OperatingSystem
 from pathlib import Path
+from datetime import datetime
 
 APPDATA_PATH = OperatingSystem.getenv("APPDATA")
 LOG_DIR = Path(APPDATA_PATH, "APG")
 LOG_DIR.mkdir(exist_ok=True)
-
-MAIN_LOGGER: logging.Logger
 
 class CustomLogger(logging.Logger):
     def __init__(self, name: str):
@@ -43,12 +42,19 @@ class CustomLogger(logging.Logger):
         """
         self.level = logging.DEBUG
     
-    def seperator(self):
+    def seperator(self, times: int = 1):
         """
         Prints a seperator
         """
-        self.info("-----------------------------------------------------------------")
+        if times <= 0:
+            return
+        for _ in range(0, times):
+            self.info("-----------------------------------------------------------------")
 
+    def new_start(self):
+        self.seperator(3)
+        self.info(f"NEW LOGGING SESS, FROM: \"{datetime.today().strftime("%Y-%m-%d @ %H:%M:%S")}")
+        self.seperator(3)
 
 
 MAIN_LOGGER = CustomLogger("APG General Logger")
