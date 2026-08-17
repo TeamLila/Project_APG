@@ -27,7 +27,8 @@ class GameState:
     speed = 5
     
     #Area
-    current_area: areaLoader.Area|None = None
+    current_area: str
+    area_background = None
     back_fill = None
     
     
@@ -62,7 +63,10 @@ def doorColide():
     for door in areaLoader.AREA_TO_DOORS[GAME.current_area]:
         _, doorFrame =  door.get_draw_info()
         if player.colliderect(doorFrame):
-            print(f"Collision with {door.leads_to}")
+            print(f"Collision with {door.leads_to.name}")
+            GAME.current_area = door.get_area().get_area_name()
+            GAME.area_background = door.get_area().get_area_pic()
+            GAME.player_x, GAME.player_y = door.get_player_exit_pos()
 
 def drawAllDoors():
     for door in areaLoader.AREA_TO_DOORS[GAME.current_area]:
