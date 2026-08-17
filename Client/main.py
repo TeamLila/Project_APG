@@ -14,12 +14,8 @@ except ImportError as e:
 
 async def gameInitilizer():
     game.GAME.current_area = "hub"
-    areaLoader.Door("hub", [1225, 30], [64, 64], AREA.AP_DUNGEON, [0,0], (77,33,33))
-    areaLoader.Door("hub", [30, 30], [64, 64], AREA.HUB_LEFT, [1800, 30])
-    areaLoader.Door("hub left", [1860, 30], [64,64], AREA.HUB, [40, 30])
-    areaLoader.Area(AREA.HUB, None)
-    areaLoader.Area(AREA.HUB_LEFT, None)
-    areaLoader.Area(AREA.AP_DUNGEON, None)
+    loadAreas()
+    loadDoors()
     await gameMain()
 
 
@@ -27,7 +23,15 @@ async def gameMain(): #NOSONAR #async without async used. Will be changed
     
     await game.run_game()
 
+def loadAreas():
+    areaLoader.Area(AREA.HUB, None)
+    areaLoader.Area(AREA.HUB_LEFT, None)
+    areaLoader.Area(AREA.AP_DUNGEON, None)
 
+def loadDoors():
+    areaLoader.Door("hub", [1225, 30], [64, 64], AREA.AP_DUNGEON, [0,0], (77,33,33))
+    areaLoader.Door("hub", [30, 30], [64, 64], AREA.HUB_LEFT, [1800, 30])
+    areaLoader.Door("hub left", [1860, 30], [64,64], AREA.HUB, [40, 30])
 
 try:
     asyncio.run(gameInitilizer())
